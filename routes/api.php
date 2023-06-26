@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\GradeLevelController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::prefix('/niveaux')
+    ->name('grade_level')
+    ->controller(GradeLevelController::class)
+    ->group(function() {
+        Route::get('/', 'all');
+    });
