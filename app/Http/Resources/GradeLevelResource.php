@@ -18,7 +18,6 @@ class GradeLevelResource extends JsonResource
             'name'       => $this->name,
             'cycle_name' => $this->cycle_name,
             'nb_cycles'  => $this->nb_cycles,
-            'classes'    => ClasseResource::collection($this->classes)
         ];
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\GradeLevelController;
+use App\Http\Controllers\Api\StudentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +22,13 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('/niveaux')
     ->name('grade_level')
     ->controller(GradeLevelController::class)
-    ->group(function() {
-        Route::get('/', 'all');
+    ->group(function () {
+        Route::get('/', 'all')->name('all');
+        Route::get('/{grade_level}', 'show')->whereNumber('grade_level')->name('show');
+    });
+
+Route::prefix('/eleves')
+    ->name('students.')
+    ->group(function () {
+        Route::apiResource('/', StudentController::class)->only(['store', 'index']);
     });

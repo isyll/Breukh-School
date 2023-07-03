@@ -10,6 +10,10 @@ class GradeLevel extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name'
+    ];
+
     public function classes(): HasMany
     {
         return $this->hasMany(Classe::class);

@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Trait;
+namespace App\Traits;
 
-Trait JoinQueryParams
+trait JoinQueryParams
 {
-
+    function ok()
+    {
+        dd('hello');
+    }
 }
