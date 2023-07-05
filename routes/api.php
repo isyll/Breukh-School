@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\GradeLevelController;
 use App\Http\Controllers\Api\SchoolYearController;
 use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\SubjectController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,6 +40,13 @@ Route::prefix('/eleves')
 Route::prefix('/years')
     ->name('years.')
     ->controller(SchoolYearController::class)
+    ->group(function () {
+        Route::get('/all', 'all');
+    });
+
+Route::prefix('/disc')
+    ->name('subjects.')
+    ->controller(SubjectController::class)
     ->group(function () {
         Route::get('/all', 'all');
     });

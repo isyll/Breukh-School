@@ -5,12 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Subject extends Model
+class SubjectGroup extends Model
 {
     use HasFactory;
 
-    public function group()
-    {
-        return $this->belongsTo(SubjectGroup::class, 'subject_group_id');
-    }
+    protected $table = 'subject_groups';
 }
