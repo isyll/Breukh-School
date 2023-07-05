@@ -15,12 +15,12 @@ return new class extends Migration {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->foreignId('subject_group_id')
+                ->nullable()
                 ->constrained(table: 'subject_groups')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+                ->nullOnDelete()
+                ->nullOnUpdate();
             $table->string("name")->unique();
             $table->string("code")->unique();
-            $table->timestamps();
         });
     }
 

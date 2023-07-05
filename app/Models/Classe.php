@@ -19,4 +19,9 @@ class Classe extends Model
     {
         return $this->belongsToMany(Student::class, 'enrollments');
     }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'classe_subject');
+    }
 }

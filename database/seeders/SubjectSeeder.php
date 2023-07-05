@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Classe;
+use App\Models\Subject;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -16,18 +18,12 @@ class SubjectSeeder extends Seeder
         DB::table('subject_groups')->insert([
             [
                 'name'       => 'Mathématiques',
-                'updated_at' => now(),
-                'created_at' => now(),
             ],
             [
                 'name'       => 'Activités numériques',
-                'updated_at' => now(),
-                'created_at' => now(),
             ],
             [
                 'name'       => 'Langue et communication',
-                'updated_at' => now(),
-                'created_at' => now(),
             ],
         ]);
 
@@ -36,23 +32,28 @@ class SubjectSeeder extends Seeder
                 'name'             => 'Arithmétiques',
                 'code'             => 'ARI',
                 'subject_group_id' => 1,
-                'updated_at'       => now(),
-                'created_at'       => now(),
             ],
             [
                 'name'             => 'Traitement de texte',
                 'code'             => 'TDT',
                 'subject_group_id' => 2,
-                'updated_at'       => now(),
-                'created_at'       => now(),
             ],
             [
                 'name'             => 'Anglais',
                 'code'             => 'ANG',
                 'subject_group_id' => 3,
-                'updated_at'       => now(),
-                'created_at'       => now(),
+            ],
+            [
+                'name'             => 'Francais',
+                'code'             => 'FRA',
+                'subject_group_id' => 3,
             ],
         ]);
+
+        $sbjs = ['ANG', 'FRA'];
+        $classe = Classe::where('name', );
+        foreach ($sbjs as $s) {
+            $s = Subject::where('code', $s);
+        }
     }
 }

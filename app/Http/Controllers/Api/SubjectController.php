@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubjectRequest;
+use App\Http\Resources\SubjectGroupsResource;
 use App\Http\Resources\SubjectResource;
 use App\Models\Subject;
 use App\Models\SubjectGroup;
@@ -14,6 +15,11 @@ class SubjectController extends Controller
     public function all()
     {
         return SubjectResource::collection(Subject::with('group')->get());
+    }
+
+    public function allGroups()
+    {
+        return SubjectGroupsResource::collection(SubjectGroup::all());
     }
 
     public function store(StoreSubjectRequest $request)
@@ -31,7 +37,7 @@ class SubjectController extends Controller
         $group     = SubjectGroup::find($datas['group']);
         $sbj       = new Subject;
         $sbj->name = $datas['name'];
-        $sbj->code = $this->getCode($datas['name']);
+        $sbj->code = self::getCode($datas['name']);
 
         $group->subjects()->save($sbj);
         return $sbj;
@@ -42,7 +48,7 @@ class SubjectController extends Controller
         return $this->getCode($test);
     }
 
-    private function getCode(string $name)
+    public static function getCode(string $name)
     {
         $name = strtoupper(trim($name));
 

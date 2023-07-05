@@ -12,8 +12,11 @@ class ClasseResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray(Request $request)
     {
-        return $this->name;
+        return [
+            'name'     => $this->name,
+            'subjects' => SubjectResource::collection($this->subjects)
+        ];
     }
 }

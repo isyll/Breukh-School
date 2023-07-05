@@ -9,11 +9,11 @@ class Subject extends Model
 {
     use HasFactory;
 
-    // protected $fillable = [
-    //     'name',
-    //     'subject_group_id',
-    //     'code'
-    // ];
+    protected $fillable = [
+        'name',
+        'subject_group_id',
+        'code'
+    ];
 
     public function group()
     {

@@ -10,10 +10,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('params', function (Blueprint $table) {
+        Schema::create('note_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('value');
+            $table->string('name')->unique();
         });
     }
 
@@ -22,6 +21,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('params');
+        Schema::dropIfExists('note_types');
     }
 };

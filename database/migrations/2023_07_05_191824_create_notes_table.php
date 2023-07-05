@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Classe;
-use App\Models\Subject;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,17 +10,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('classe_subject', function (Blueprint $table) {
+        Schema::create('notes', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Classe::class)
-                ->constrained()
+            $table->foreignId('enrollment_id')
+                ->constrained(table: 'enrollments');
+            $table->foreignId('classe_subject_id')
+                ->constrained(table: 'classe_subject')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignIdFor(Subject::class)
-                ->constrained()
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->integer("max_note")->default(0);
+            $table->foreignId('note_type_id')
+                ->constrained(table: 'note_types');
         });
     }
 
@@ -31,6 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('classe_subject');
+        Schema::dropIfExists('notes');
     }
 };

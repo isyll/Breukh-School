@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ClasseController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\GradeLevelController;
 use App\Http\Controllers\Api\SchoolYearController;
@@ -30,11 +31,19 @@ Route::prefix('/niveaux')
         Route::get('/{grade_level}', 'show')->whereNumber('grade_level')->name('show');
     });
 
+Route::prefix('/classes')
+    ->controller(ClasseController::class)
+    ->group(function () {
+        Route::post('/{classe}/add-subject', 'addSubject');
+    });
+
 Route::prefix('/eleves')
     ->name('students.')
     ->group(function () {
         Route::apiResource('/', StudentController::class)->only(['store', 'index']);
         Route::get('/liste/{classeId}', [EnrollmentController::class, 'studentsList']);
+        Route::post('/sortie', [StudentController::class, 'out']);
+        Route::post('/entree', [StudentController::class, 'in']);
     });
 
 Route::prefix('/years')
@@ -49,6 +58,7 @@ Route::prefix('/disc')
     ->controller(SubjectController::class)
     ->group(function () {
         Route::get('/all', 'all');
+        Route::get('/group/all', 'allGroups');
         Route::post('/create', 'store');
     });
 

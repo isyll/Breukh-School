@@ -37,7 +37,7 @@ class StudentController extends Controller
         $student           = $request->validated();
         $student['number'] = $this->getAvailableNumber();
         $classeId          = $student['classe'];
-        $currentYear = SchoolYear::currentYear();
+        $currentYear       = SchoolYear::currentYear();
 
         DB::beginTransaction();
         $student = new Student($student);
@@ -72,6 +72,16 @@ class StudentController extends Controller
         return $result->num;
     }
 
+    public function out(Request $request)
+    {
+        return $this->changeState($request, 0);
+    }
+
+    public function in(Request $request)
+    {
+        return $this->changeState($request, 1);
+    }
+
     /**
      * Display the specified resource.
      */
@@ -102,5 +112,32 @@ class StudentController extends Controller
     public function destroy(Student $student)
     {
         //
+    }
+
+    private function changeState(Request $request, int $state)
+    {
+        $result = [];
+
+        if ($request->input('id'))
+            $datas = [$request->input('id')];
+        else
+            $datas = $request->input();
+
+        foreach ($datas as $item) {
+            if ($student = Student::find($item)) {
+                $student->state = $state;
+                $student->save();
+            }
+            else {
+                $result['errors'][$item] = ['Etudiant non trouvé'];
+                $result['message']       = 'Au moins un élève inexistant';
+            }
+        }
+
+        if (array_key_exists('errors', $result))
+            return response()->json($result, 404);
+
+        $result['message'] = 'Donées enregistrées';
+        return $result;
     }
 }
