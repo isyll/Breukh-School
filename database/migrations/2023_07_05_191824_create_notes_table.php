@@ -20,6 +20,7 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->foreignId('note_type_id')
                 ->constrained(table: 'note_types');
+            $table->float('value');
         });
     }
 
