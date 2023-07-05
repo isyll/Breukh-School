@@ -49,6 +49,7 @@ Route::prefix('/disc')
     ->controller(SubjectController::class)
     ->group(function () {
         Route::get('/all', 'all');
+        Route::post('/create', 'store');
     });
 
-Route::get('/test', [StudentController::class, 'test']);
+// Route::get('/test/{test}', [SubjectController::class, 'test']);

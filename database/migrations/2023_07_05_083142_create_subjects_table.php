@@ -18,7 +18,7 @@ return new class extends Migration {
                 ->constrained(table: 'subject_groups')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string("name");
+            $table->string("name")->unique();
             $table->string("code")->unique();
             $table->timestamps();
         });

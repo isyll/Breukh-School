@@ -10,4 +10,9 @@ class SubjectGroup extends Model
     use HasFactory;
 
     protected $table = 'subject_groups';
+
+    public function subjects()
+    {
+        return $this->hasMany(Subject::class);
+    }
 }
