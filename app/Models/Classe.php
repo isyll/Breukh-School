@@ -14,4 +14,9 @@ class Classe extends Model
     {
         return $this->belongsTo(GradeLevel::class);
     }
+
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'enrollments');
+    }
 }

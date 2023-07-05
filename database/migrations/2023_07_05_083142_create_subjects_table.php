@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Classe;
+use App\Models\Subject;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,10 +12,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('school_years', function (Blueprint $table) {
+        Schema::create('subjects', function (Blueprint $table) {
             $table->id();
-            $table->boolean("state")->default(false);
-            $table->string("period")->unique();
+            $table->foreignId('subject_group_id')->constrained(table: 'subject_groups');
+            $table->string("name");
+            $table->string("code")->unique();
             $table->timestamps();
         });
     }
@@ -23,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('school_years');
+        Schema::dropIfExists('subjects');
     }
 };

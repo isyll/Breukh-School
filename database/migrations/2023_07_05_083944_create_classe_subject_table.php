@@ -1,8 +1,7 @@
 <?php
 
 use App\Models\Classe;
-use App\Models\SchoolYear;
-use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,20 +12,17 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('enrollments', function (Blueprint $table) {
+        Schema::create('classe_subject', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Student::class)
-                ->constrained()
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->foreignIdFor(Classe::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignIdFor(SchoolYear::class)
+            $table->foreignIdFor(Subject::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->integer("max_note");
             $table->timestamps();
         });
     }
@@ -36,6 +32,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('enrollments');
+        Schema::dropIfExists('classe_subject');
     }
 };

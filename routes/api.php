@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\GradeLevelController;
+use App\Http\Controllers\Api\SchoolYearController;
 use App\Http\Controllers\Api\StudentController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,4 +33,14 @@ Route::prefix('/eleves')
     ->name('students.')
     ->group(function () {
         Route::apiResource('/', StudentController::class)->only(['store', 'index']);
+        Route::get('/liste/{classeId}', [EnrollmentController::class, 'studentsList']);
     });
+
+Route::prefix('/years')
+    ->name('years.')
+    ->controller(SchoolYearController::class)
+    ->group(function () {
+        Route::get('/all', 'all');
+    });
+
+Route::get('/test', [StudentController::class, 'test']);

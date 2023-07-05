@@ -13,13 +13,5 @@ class ParamSeeder extends Seeder
      */
     public function run(): void
     {
-        $year = date('Y');
-
-        DB::table('params')->insert([
-            'name'       => 'current-year',
-            'value'      => $year . '-' . $year + 1,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
     }
 }

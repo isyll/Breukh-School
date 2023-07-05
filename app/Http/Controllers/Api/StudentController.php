@@ -9,6 +9,7 @@ use App\Models\Param;
 use App\Models\SchoolYear;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
@@ -33,24 +34,42 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request)
     {
-        $student  = $request->validated();
-        $classeId = $student['classe'];
+        $student           = $request->validated();
+        $student['number'] = $this->getAvailableNumber();
+        $classeId          = $student['classe'];
+        $currentYear = SchoolYear::currentYear();
 
+        DB::beginTransaction();
         $student = new Student($student);
         $student->save();
-
-        $currentYear = Param::where('name', 'current-year')->first();
-        $currentYear = SchoolYear::where('period', $currentYear->value)->first();
 
         $enrollment = new Enrollment([
             'school_year_id' => $currentYear->id,
             'student_id'     => $student->id,
             'classe_id'      => $classeId,
-            'date'           => now()
         ]);
 
         $enrollment->save();
+        DB::commit();
+
         return $student;
+    }
+
+    public function getAvailableNumber()
+    {
+        $result = Student::selectRaw('MIN(number+1) AS num')
+            ->from('students AS s1')
+            ->whereNotExists(function ($query) {
+                $query->selectRaw(1)
+                    ->from('students AS s2')
+                    ->whereRaw('s2.number = s1.number + 1 and s2.state = 1');
+            })
+            ->limit(1)
+            ->get()[0];
+
+        if ($result->num === NULL)
+            return 1;
+        return $result->num;
     }
 
     /**

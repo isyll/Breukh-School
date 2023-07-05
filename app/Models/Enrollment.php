@@ -15,4 +15,19 @@ class Enrollment extends Model
         'classe_id',
         'date'
     ];
+
+    public function students()
+    {
+        return $this->belongsToMany(Student::class);
+    }
+
+    public function classes()
+    {
+        return $this->belongsToMany(Classe::class);
+    }
+
+    public function years()
+    {
+        return $this->belongsToMany(SchoolYear::class);
+    }
 }

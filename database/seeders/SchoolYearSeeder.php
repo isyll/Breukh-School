@@ -15,9 +15,17 @@ class SchoolYearSeeder extends Seeder
     {
         $year = date('Y');
 
-        for ($y = $year; $y < $year + 4; $y++) {
+        DB::table('school_years')->insert([
+            'period'     => $year . '-' . $year + 1,
+            'state'      => 1,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        for ($y = ++$year; $y < $year + 5; $y++) {
             DB::table('school_years')->insert([
                 'period'     => $y . '-' . $y + 1,
+                'state'      => 0,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);

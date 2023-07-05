@@ -22,14 +22,25 @@ class StoreStudentRequest extends FormRequest
      */
     public function rules(): array
     {
+        $date = date_format(date_create(), 'Y-m-d');
+        $date = strtotime("$date - 5 year");
+        $date = date('Y-m-d', $date);
+
         return [
             'firstname'  => 'required',
             'lastname'   => 'required',
             'gender'     => ['required', Rule::in(['male', 'female'])],
-            'birthdate'  => 'sometimes|date',
+            'birthdate'  => "sometimes|date|before_or_equal:$date",
             'birthplace' => 'sometimes',
             'profile'    => ['required', Rule::in(['internal', 'external'])],
             'classe'     => 'required|exists:classes,id',
         ];
+    }
+
+    public function prepareForValidation()
+    {
+        $this->merge([
+            'status' => 1,
+        ]);
     }
 }

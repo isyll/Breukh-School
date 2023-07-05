@@ -5,12 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SchoolYear extends Model
+class Subject extends Model
 {
     use HasFactory;
-
-    public static function currentYear()
-    {
-        return self::where("state", 1)->first();
-    }
 }
