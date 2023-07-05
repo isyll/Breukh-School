@@ -18,8 +18,8 @@ return new class extends Migration {
                 ->constrained(table: 'classe_subject')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('note_type_id')
-                ->constrained(table: 'note_types');
+            $table->foreignId('evaluation_id')
+                ->constrained(table: 'evaluations');
             $table->float('value');
         });
     }
