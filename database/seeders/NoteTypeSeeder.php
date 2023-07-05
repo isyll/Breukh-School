@@ -13,7 +13,7 @@ class NoteTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('note_types')->insert([
+        DB::table('evaluations')->insert([
             [
                 'name' => 'devoir'
             ],
