@@ -14,7 +14,10 @@ return new class extends Migration {
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('subject_group_id')->constrained(table: 'subject_groups');
+            $table->foreignId('subject_group_id')
+                ->constrained(table: 'subject_groups')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->string("name");
             $table->string("code")->unique();
             $table->timestamps();
