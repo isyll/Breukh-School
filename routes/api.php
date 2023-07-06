@@ -44,7 +44,6 @@ Route::prefix('/eleves')
         Route::get('/liste/{classeId}', [EnrollmentController::class, 'studentsList']);
         Route::post('/sortie', [StudentController::class, 'out']);
         Route::post('/entree', [StudentController::class, 'in']);
-        Route::post('/{student}/add-note', [StudentController::class, 'addNote']);
     });
 
 Route::prefix('/years')
@@ -62,5 +61,7 @@ Route::prefix('/disc')
         Route::get('/group/all', 'allGroups');
         Route::post('/create', 'store');
     });
+
+Route::post('/add-notes/{classe}/{subject}/{evaluation}', [StudentController::class, 'addNote']);
 
 // Route::get('/test/{test}', [SubjectController::class, 'test']);

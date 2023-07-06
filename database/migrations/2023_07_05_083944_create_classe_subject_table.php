@@ -13,12 +13,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('classe_subject', function (Blueprint $table) {
-            $table->foreignId('classe_id')
-                ->constrained(table: 'classes');
-            $table->foreignId('subject_id')
-                ->constrained();
+            $table->id();
+            $table->foreignId('classe_id');
+            $table->foreignId('subject_id');
             $table->integer("max_note")->default(0);
-            $table->primary(['classe_id', 'subject_id']);
         });
     }
 

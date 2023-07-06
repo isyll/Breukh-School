@@ -58,7 +58,7 @@ class SubjectSeeder extends Seeder
 
             foreach ($subjects as $s) {
                 $s = Subject::where('code', $s)->first();
-                $classe->subjects()->save($s);
+                $classe->subjects()->save($s, ['max_note' => 20]);
             }
         }
     }

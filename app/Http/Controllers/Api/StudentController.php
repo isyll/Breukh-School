@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
 use App\Models\Classe;
+use App\Models\ClasseSubject;
 use App\Models\Enrollment;
+use App\Models\Evaluation;
 use App\Models\Note;
 use App\Models\Param;
 use App\Models\SchoolYear;
 use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -75,9 +78,13 @@ class StudentController extends Controller
         return $result->num;
     }
 
-    public function addNote(Request $request, Student $student)
-    {
-        $datas = $request->input();
+    public function addNote(
+        Request $request,
+        Classe $classe,
+        Subject $subject,
+        Evaluation $evaluation
+    ) {
+        $datas = $request->input('notes');
 
         foreach ($datas as $data) {
             $validator = $this->validateDatas($data);
@@ -88,40 +95,45 @@ class StudentController extends Controller
                     : SchoolYear::where('state', 1)->first()->id;
 
                 $enrollment = Enrollment::where('student_id', $data['student'])
-                    ->where('classe_id', $data['classe'])
+                    ->where('classe_id', $classe->id)
                     ->where('school_year_id', $year)
                     ->first();
 
-                $classeSubject = Classe::find($data['classe'])
-                    ->subjects()->wherePivot('subject_id', $data['subject'])
-                    ->first()?->pivot->classe_id;
+                $classeSubject = ClasseSubject::where('classe_id', $classe->id)
+                    ->where('subject_id', $subject->id)->first();
 
                 if ($classeSubject) {
                     $note = Note::where('enrollment_id', $enrollment->id)
-                        ->where('classe_subject_id', $classeSubject)
-                        ->where('evaluation_id', $data['evaluation'])
+                        ->where('classe_subject_id', $classeSubject->id)
+                        ->where('evaluation_id', $evaluation->id)
                         ->first();
+
+                    if ($data['note'] > $classeSubject->max_note) {
+                        return response()->json([
+                            'errors' => [
+                                "Le note {$data['note']} est plus grande que $classeSubject->max_note"
+                            ]
+                        ], 422);
+                    }
 
                     if ($note) {
                         $note->value = $data['note'];
                         $note->save();
                     }
-                    else
-                        $enrollment->notes()->attach($classeSubject, [
-                            'value'         => $data['note'],
-                            'evaluation_id' => $data['evaluation']
-                        ]);
-                    return $enrollment;
+                    else {
+                        $note                    = new Note;
+                        $note->enrollment_id     = $enrollment->id;
+                        $note->classe_subject_id = $classeSubject->id;
+                        $note->evaluation_id     = $evaluation->id;
+                        $note->value             = $data['note'];
+                        $note->save();
+                    }
+                    return $note;
                 }
                 else {
-                    $classe  = Classe::find($data['classe']);
-                    $subject = Classe::find($data['subject']);
-
                     return response()->json([
                         'errors' => [
-                            $data['subject'] => [
-                                "La classe $classe->name ne possède pas le sujet $subject->name"
-                            ]
+                            "La classe $classe->name ne possède pas le sujet $subject->name"
                         ]
                     ], 422);
                 }
@@ -196,12 +208,8 @@ class StudentController extends Controller
     private function validateDatas(array $data)
     {
         return Validator::make($data, [
-            'student'    => 'required|exists:students,id',
-            'classe'     => 'required|exists:classes,id',
-            'subject'    => 'required|exists:subjects,id',
-            'evaluation' => 'required|exists:evaluations,id',
-            'year'       => 'sometimes|exists:school_years,id',
-            'note'       => 'required|numeric'
+            'student' => 'required|exists:students,id',
+            'note'    => 'required|numeric'
         ]);
     }
 }
