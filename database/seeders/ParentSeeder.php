@@ -14,7 +14,7 @@ class ParentSeeder extends Seeder
      */
     public function run(): void
     {
-        $students = Student::all();
+        $students = Student::all('id');
         foreach ($students as $student) {
             DB::table('parents')->insert([
                 'student_id' => $student->id,

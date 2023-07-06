@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             SubjectSeeder::class,
             StudentSeeder::class,
             NoteTypeSeeder::class,
-            ParentSeeder::class
+            ParentSeeder::class,
+            EventSeeder::class
         ]);
     }
 }

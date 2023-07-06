@@ -24,4 +24,9 @@ class Classe extends Model
     {
         return $this->belongsToMany(Subject::class, 'classe_subject');
     }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class);
+    }
 }
