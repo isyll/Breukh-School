@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             SchoolYearSeeder::class,
             SubjectSeeder::class,
             StudentSeeder::class,
-            NoteTypeSeeder::class
+            NoteTypeSeeder::class,
+            ParentSeeder::class
         ]);
     }
 }
