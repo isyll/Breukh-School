@@ -22,9 +22,7 @@ class ClasseSeeder extends Seeder
             DB::table('classes')
                 ->insert([
                     'name'           => $classe,
-                    'grade_level_id' => $elementaire->id,
-                    'created_at'     => now(),
-                    'updated_at'     => now()
+                    'grade_level_id' => $elementaire->id
                 ]);
         }
 
@@ -34,9 +32,7 @@ class ClasseSeeder extends Seeder
             DB::table('classes')
                 ->insert([
                     'name'           => $classe,
-                    'grade_level_id' => $secondaire->id,
-                    'created_at'     => now(),
-                    'updated_at'     => now()
+                    'grade_level_id' => $secondaire->id
                 ]);
         }
     }

@@ -12,20 +12,26 @@ class GradeLevelSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('grade_levels')->insert([
-            'name'       => 'Elementaire',
-            'cycle_name' => 'trimestre',
-            'nb_cycles'  => 3,
-            'created_at' => now(),
-            'updated_at' => now()
+        DB::table('cycles')->insert([
+            [
+                'name'   => 'semestre',
+                'number' => 2
+            ],
+            [
+                'name'   => 'trimestre',
+                'number' => 3
+            ],
         ]);
 
         DB::table('grade_levels')->insert([
-            'name'       => 'Secondaire',
-            'cycle_name' => 'semestre',
-            'nb_cycles'  => 2,
-            'created_at' => now(),
-            'updated_at' => now()
+            [
+                'name'     => 'Elementaire',
+                'cycle_id' => 2,
+            ],
+            [
+                'name'     => 'Secondaire',
+                'cycle_id' => 1,
+            ]
         ]);
     }
 }

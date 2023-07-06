@@ -4,146 +4,43 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
-use App\Models\Classe;
-use App\Models\ClasseSubject;
 use App\Models\Enrollment;
-use App\Models\Evaluation;
-use App\Models\Note;
-use App\Models\Param;
 use App\Models\SchoolYear;
 use App\Models\Student;
-use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreStudentRequest $request)
     {
-        $student           = $request->validated();
-        $student['number'] = $this->getAvailableNumber();
-        $classeId          = $student['classe'];
-        $currentYear       = SchoolYear::currentYear();
+        $data        = $request->validated();
+        $classeId    = $data['classe'];
+        $currentYear = SchoolYear::currentYear();
+
+        $student             = new Student;
+        $student->number     = Student::getAvailableNumber();
+        $student->firstname  = $data['firstname'];
+        $student->lastname   = $data['lastname'];
+        $student->gender     = $data['gender'];
+        $student->profile    = $data['profile'];
+        $student->birthdate  = $data['birthdate'] ?: null;
+        $student->birthplace = $data['birthplace'] ?: null;
 
         DB::beginTransaction();
-        $student = new Student($student);
         $student->save();
-
         $enrollment = new Enrollment([
             'school_year_id' => $currentYear->id,
             'student_id'     => $student->id,
             'classe_id'      => $classeId,
         ]);
-
         $enrollment->save();
         DB::commit();
 
         return $student;
-    }
-
-    public function getAvailableNumber()
-    {
-        $result = Student::selectRaw('MIN(number+1) AS num')
-            ->from('students AS s1')
-            ->whereNotExists(function ($query) {
-                $query->selectRaw(1)
-                    ->from('students AS s2')
-                    ->whereRaw('s2.number = s1.number + 1 and s2.state = 1');
-            })
-            ->limit(1)
-            ->get()[0];
-
-        if ($result->num === NULL)
-            return 1;
-        return $result->num;
-    }
-
-    public function addNote(
-        Request $request,
-        Classe $classe,
-        Subject $subject,
-        Evaluation $evaluation
-    ) {
-        $datas = $request->input('notes');
-
-        foreach ($datas as $data) {
-            $validator = $this->validateDatas($data);
-
-            if (!$validator->fails()) {
-                $year = isset($data['year'])
-                    ? SchoolYear::find($data['year'])->id
-                    : SchoolYear::where('state', 1)->first()->id;
-
-                $enrollment = Enrollment::where('student_id', $data['student'])
-                    ->where('classe_id', $classe->id)
-                    ->where('school_year_id', $year)
-                    ->first();
-
-                $classeSubject = ClasseSubject::where('classe_id', $classe->id)
-                    ->where('subject_id', $subject->id)->first();
-
-                if ($classeSubject) {
-                    $note = Note::where('enrollment_id', $enrollment->id)
-                        ->where('classe_subject_id', $classeSubject->id)
-                        ->where('evaluation_id', $evaluation->id)
-                        ->first();
-
-                    if ($data['note'] > $classeSubject->max_note) {
-                        return response()->json([
-                            'errors' => [
-                                "Le note {$data['note']} est plus grande que $classeSubject->max_note"
-                            ]
-                        ], 422);
-                    }
-
-                    if ($note) {
-                        $note->value = $data['note'];
-                        $note->save();
-                    }
-                    else {
-                        $note                    = new Note;
-                        $note->enrollment_id     = $enrollment->id;
-                        $note->classe_subject_id = $classeSubject->id;
-                        $note->evaluation_id     = $evaluation->id;
-                        $note->value             = $data['note'];
-                        $note->save();
-                    }
-                    return $note;
-                }
-                else {
-                    return response()->json([
-                        'errors' => [
-                            "La classe $classe->name ne possède pas le sujet $subject->name"
-                        ]
-                    ], 422);
-                }
-            }
-            else {
-                return response()->json([
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-        }
     }
 
     /**
@@ -181,11 +78,7 @@ class StudentController extends Controller
     private function changeState(Request $request, int $state)
     {
         $result = [];
-
-        if ($request->input('id'))
-            $datas = [$request->input('id')];
-        else
-            $datas = $request->input();
+        $datas = $request->input('id');
 
         foreach ($datas as $item) {
             if ($student = Student::find($item)) {
@@ -193,23 +86,15 @@ class StudentController extends Controller
                 $student->save();
             }
             else {
-                $result['errors'][$item] = ['Etudiant non trouvé'];
-                $result['message']       = 'Au moins un élève inexistant';
+                $result['errors'][$item] = [__('messages.student_not_found')];
+                $result['message']       = __('messages.at_least_one_student_not_found');
             }
         }
 
         if (array_key_exists('errors', $result))
             return response()->json($result, 404);
 
-        $result['message'] = 'Donées enregistrées';
+        $result['message'] = __('messages.the_data_has_been_saved');
         return $result;
-    }
-
-    private function validateDatas(array $data)
-    {
-        return Validator::make($data, [
-            'student' => 'required|exists:students,id',
-            'note'    => 'required|numeric'
-        ]);
     }
 }

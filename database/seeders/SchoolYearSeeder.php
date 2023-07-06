@@ -17,17 +17,13 @@ class SchoolYearSeeder extends Seeder
 
         DB::table('school_years')->insert([
             'period'     => $year . '-' . $year + 1,
-            'state'      => 1,
-            'created_at' => now(),
-            'updated_at' => now()
+            'state'      => 1
         ]);
 
         for ($y = ++$year; $y < $year + 5; $y++) {
             DB::table('school_years')->insert([
                 'period'     => $y . '-' . $y + 1,
-                'state'      => 0,
-                'created_at' => now(),
-                'updated_at' => now()
+                'state'      => 0
             ]);
         }
     }

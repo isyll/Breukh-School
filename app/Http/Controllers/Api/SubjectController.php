@@ -29,7 +29,7 @@ class SubjectController extends Controller
             return response()->json([
                 'errors' => [
                     [
-                        'name' => ['Ce nom existe déjà']
+                        'name' => [__('messages.subject_name_already_exists', ['name' => $datas['name']])]
                     ]
                 ]
             ], 422);

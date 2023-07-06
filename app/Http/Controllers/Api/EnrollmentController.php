@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\StudentListResource;
 use App\Models\Classe;
 use App\Models\Enrollment;
 use App\Models\Param;
@@ -11,11 +12,8 @@ use Illuminate\Http\Request;
 
 class EnrollmentController extends Controller
 {
-    public function studentsList(int $classeId)
+    public function studentsList(Classe $classe)
     {
-        $list = Classe::findOrFail($classeId);
-        $list = $list->students;
-
-        return $list;
+        return StudentListResource::collection($classe->students);
     }
 }

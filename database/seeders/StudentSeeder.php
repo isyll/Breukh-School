@@ -20,15 +20,15 @@ class StudentSeeder extends Seeder
             'birthplace' => 'Dakar',
             'gender'     => "male",
             'profile'    => 'internal',
-            'updated_at' => now(),
-            'created_at' => now(),
             'number'     => 1
         ]);
 
         DB::table('enrollments')->insert([
             'classe_id'      => 1,
             'school_year_id' => 1,
-            'student_id'     => 1
+            'student_id'     => 1,
+            'updated_at'     => now(),
+            'created_at'     => now(),
         ]);
     }
 }

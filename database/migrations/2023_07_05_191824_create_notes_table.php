@@ -12,12 +12,10 @@ return new class extends Migration {
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('enrollment_id')
-                ->constrained(table: 'enrollments');
-            $table->foreignId('classe_subject_id')
-                ->constrained(table: 'classe_subject');
-            $table->foreignId('evaluation_id')
-                ->constrained(table: 'evaluations');
+            $table->foreignId('enrollment_id')->constrained('enrollments');
+            $table->foreignId('classe_subject_id')->constrained('classe_subject');
+            $table->foreignId('evaluation_id')->constrained('evaluations');
+            $table->integer('cycle');
             $table->float('value');
         });
     }

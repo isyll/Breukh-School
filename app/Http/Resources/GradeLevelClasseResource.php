@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class GradeLevelResource extends JsonResource
+class GradeLevelClasseResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,6 +17,7 @@ class GradeLevelResource extends JsonResource
         return [
             'id'      => $this->id,
             'name'    => $this->name,
+            'classes' => OnlyClasseResource::collection($this->classes)
         ];
     }
 }

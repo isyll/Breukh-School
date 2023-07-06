@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->string("birthplace")->nullable();
             $table->string("gender")->nullable();
             $table->string("profile");
-            $table->timestamps();
         });
     }
 

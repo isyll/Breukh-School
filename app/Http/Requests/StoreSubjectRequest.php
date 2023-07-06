@@ -23,7 +23,7 @@ class StoreSubjectRequest extends FormRequest
     {
         return [
             'group' => 'required|exists:subject_groups,id',
-            'name'             => 'required'
+            'name'  => 'required'
         ];
     }
 

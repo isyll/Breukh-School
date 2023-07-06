@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ClasseController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\GradeLevelController;
+use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\SchoolYearController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\SubjectController;
@@ -31,37 +32,32 @@ Route::prefix('/niveaux')
         Route::get('/{grade_level}', 'show')->whereNumber('grade_level')->name('show');
     });
 
-Route::prefix('/classes')
-    ->controller(ClasseController::class)
-    ->group(function () {
-        Route::post('/{classe}/add-subject', 'addSubject');
-    });
-
 Route::prefix('/eleves')
+    ->controller(StudentController::class)
     ->name('students.')
     ->group(function () {
-        Route::apiResource('/', StudentController::class)->only(['store', 'index']);
-        Route::get('/liste/{classeId}', [EnrollmentController::class, 'studentsList']);
-        Route::post('/sortie', [StudentController::class, 'out']);
-        Route::post('/entree', [StudentController::class, 'in']);
+        Route::post('/', 'store');
+        Route::patch('/sortie', 'out');
+        Route::patch('/entree', 'in');
     });
 
-Route::prefix('/years')
+Route::prefix('/annees')
     ->name('years.')
     ->controller(SchoolYearController::class)
     ->group(function () {
         Route::get('/all', 'all');
     });
 
-Route::prefix('/disc')
+Route::prefix('/disciplines')
     ->name('subjects.')
     ->controller(SubjectController::class)
     ->group(function () {
         Route::get('/all', 'all');
-        Route::get('/group/all', 'allGroups');
+        Route::get('/group', 'allGroups');
         Route::post('/create', 'store');
     });
 
-Route::post('/add-notes/{classe}/{subject}/{evaluation}', [StudentController::class, 'addNote']);
+Route::get('/classe/{classe}/liste', [EnrollmentController::class, 'studentsList']);
+Route::post('/add-notes/{classe}/{subject}/{evaluation}', [NoteController::class, 'addNote']);
 
 // Route::get('/test/{test}', [SubjectController::class, 'test']);
