@@ -17,13 +17,13 @@ class SubjectSeeder extends Seeder
     {
         DB::table('subject_groups')->insert([
             [
-                'name'       => 'Mathématiques',
+                'name' => 'Mathématiques',
             ],
             [
-                'name'       => 'Activités numériques',
+                'name' => 'Activités numériques',
             ],
             [
-                'name'       => 'Langue et communication',
+                'name' => 'Langue et communication',
             ],
         ]);
 
@@ -50,10 +50,16 @@ class SubjectSeeder extends Seeder
             ],
         ]);
 
-        $sbjs = ['ANG', 'FRA'];
-        $classe = Classe::where('name', );
-        foreach ($sbjs as $s) {
-            $s = Subject::where('code', $s);
+        $subjects = ['ANG', 'FRA'];
+        $classes  = ['6eme', 'CI', '5eme', 'CE1'];
+
+        foreach ($classes as $classe) {
+            $classe = Classe::where('name', $classe)->first();
+
+            foreach ($subjects as $s) {
+                $s = Subject::where('code', $s)->first();
+                $classe->subjects()->save($s);
+            }
         }
     }
 }

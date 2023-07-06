@@ -44,6 +44,7 @@ Route::prefix('/eleves')
         Route::get('/liste/{classeId}', [EnrollmentController::class, 'studentsList']);
         Route::post('/sortie', [StudentController::class, 'out']);
         Route::post('/entree', [StudentController::class, 'in']);
+        Route::post('/{student}/add-note', [StudentController::class, 'addNote']);
     });
 
 Route::prefix('/years')

@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Note extends Model
 {
     use HasFactory;
+
+    public $timestamps = false;
+
+    public function enrollments()
+    {
+        $this->belongsToMany(Enrollment::class, '');
+    }
 }

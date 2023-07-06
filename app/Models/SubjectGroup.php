@@ -11,6 +11,8 @@ class SubjectGroup extends Model
 
     protected $table = 'subject_groups';
 
+    public $timestamps = false;
+
     public function subjects()
     {
         return $this->hasMany(Subject::class);

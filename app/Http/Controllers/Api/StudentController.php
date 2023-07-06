@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
+use App\Models\Classe;
 use App\Models\Enrollment;
+use App\Models\Note;
 use App\Models\Param;
 use App\Models\SchoolYear;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
 {
@@ -72,30 +75,79 @@ class StudentController extends Controller
         return $result->num;
     }
 
+    public function addNote(Request $request, Student $student)
+    {
+        $datas = $request->input();
+
+        foreach ($datas as $data) {
+            $validator = $this->validateDatas($data);
+
+            if (!$validator->fails()) {
+                $year = isset($data['year'])
+                    ? SchoolYear::find($data['year'])->id
+                    : SchoolYear::where('state', 1)->first()->id;
+
+                $enrollment = Enrollment::where('student_id', $data['student'])
+                    ->where('classe_id', $data['classe'])
+                    ->where('school_year_id', $year)
+                    ->first();
+
+                $classeSubject = Classe::find($data['classe'])
+                    ->subjects()->wherePivot('subject_id', $data['subject'])
+                    ->first()?->pivot->classe_id;
+
+                if ($classeSubject) {
+                    $note = Note::where('enrollment_id', $enrollment->id)
+                        ->where('classe_subject_id', $classeSubject)
+                        ->where('evaluation_id', $data['evaluation'])
+                        ->first();
+
+                    if ($note) {
+                        $note->value = $data['note'];
+                        $note->save();
+                    }
+                    else
+                        $enrollment->notes()->attach($classeSubject, [
+                            'value'         => $data['note'],
+                            'evaluation_id' => $data['evaluation']
+                        ]);
+                    return $enrollment;
+                }
+                else {
+                    $classe  = Classe::find($data['classe']);
+                    $subject = Classe::find($data['subject']);
+
+                    return response()->json([
+                        'errors' => [
+                            $data['subject'] => [
+                                "La classe $classe->name ne possède pas le sujet $subject->name"
+                            ]
+                        ]
+                    ], 422);
+                }
+            }
+            else {
+                return response()->json([
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+        }
+    }
+
+    /**
+     * Delete student state.
+     */
     public function out(Request $request)
     {
         return $this->changeState($request, 0);
     }
 
+    /**
+     * Restore student state.
+     */
     public function in(Request $request)
     {
         return $this->changeState($request, 1);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Student $student)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Student $student)
-    {
-        //
     }
 
     /**
@@ -139,5 +191,17 @@ class StudentController extends Controller
 
         $result['message'] = 'Donées enregistrées';
         return $result;
+    }
+
+    private function validateDatas(array $data)
+    {
+        return Validator::make($data, [
+            'student'    => 'required|exists:students,id',
+            'classe'     => 'required|exists:classes,id',
+            'subject'    => 'required|exists:subjects,id',
+            'evaluation' => 'required|exists:evaluations,id',
+            'year'       => 'sometimes|exists:school_years,id',
+            'note'       => 'required|numeric'
+        ]);
     }
 }

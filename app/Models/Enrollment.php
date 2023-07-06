@@ -16,18 +16,23 @@ class Enrollment extends Model
         'date'
     ];
 
-    public function students()
+    public function student()
     {
-        return $this->belongsToMany(Student::class);
+        return $this->belongsTo(Student::class);
     }
 
-    public function classes()
+    public function classe()
     {
-        return $this->belongsToMany(Classe::class);
+        return $this->belongsTo(Classe::class);
     }
 
-    public function years()
+    public function year()
     {
-        return $this->belongsToMany(SchoolYear::class);
+        return $this->belongsTo(SchoolYear::class);
+    }
+
+    public function notes()
+    {
+        return $this->belongsToMany(Note::class, 'notes', 'enrollment_id', 'classe_subject_id');
     }
 }

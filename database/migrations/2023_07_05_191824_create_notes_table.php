@@ -15,9 +15,7 @@ return new class extends Migration {
             $table->foreignId('enrollment_id')
                 ->constrained(table: 'enrollments');
             $table->foreignId('classe_subject_id')
-                ->constrained(table: 'classe_subject')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+                ->constrained(table: 'classe_subject', column: 'classe_id');
             $table->foreignId('evaluation_id')
                 ->constrained(table: 'evaluations');
             $table->float('value');
