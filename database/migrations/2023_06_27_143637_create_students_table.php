@@ -16,8 +16,9 @@ return new class extends Migration {
             $table->string("lastname");
             $table->dateTime("birthdate")->nullable();
             $table->string("birthplace")->nullable();
-            $table->string("gender")->nullable();
-            $table->string("profile");
+            $table->enum("gender", ['male', 'female'])->nullable();
+            $table->enum("profile", ['internal', 'external']);
+            $table->foreignId('parent_id')->constrained('parents');
         });
     }
 
@@ -28,5 +29,5 @@ return new class extends Migration {
     {
         Schema::dropIfExists('students');
 
-  }
+    }
 };

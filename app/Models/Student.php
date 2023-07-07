@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\ActiveYear;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model
 {
-    use HasFactory;
+    use HasFactory, ActiveYear;
 
     protected $fillable = [
         'firstname',
@@ -35,5 +36,15 @@ class Student extends Model
         if ($result->num === NULL)
             return 1;
         return $result->num;
+    }
+
+    public function enrollments()
+    {
+        return $this->belongsTo(Enrollment::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(StudentParent::class);
     }
 }

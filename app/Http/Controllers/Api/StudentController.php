@@ -78,7 +78,7 @@ class StudentController extends Controller
     private function changeState(Request $request, int $state)
     {
         $result = [];
-        $datas = $request->input('id');
+        $datas  = $request->input('id');
 
         foreach ($datas as $item) {
             if ($student = Student::find($item)) {

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\SchoolYearController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\SubjectController;
+use App\Models\SchoolYear;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,3 +62,7 @@ Route::get('/classe/{classe}/liste', [EnrollmentController::class, 'studentsList
 Route::post('/add-notes/{classe}/{subject}/{evaluation}', [NoteController::class, 'addNote']);
 
 // Route::get('/test/{test}', [SubjectController::class, 'test']);
+Route::get(
+    '/test',
+    [StudentController::class, 'test']
+);

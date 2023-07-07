@@ -13,7 +13,6 @@ return new class extends Migration {
         Schema::create('parents', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
-            $table->foreignId('student_id')->constrained('students');
         });
     }
 

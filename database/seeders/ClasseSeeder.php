@@ -16,7 +16,7 @@ class ClasseSeeder extends Seeder
         $elementaire = GradeLevel::where('name', 'Elementaire')->first();
         $secondaire  = GradeLevel::where('name', 'Secondaire')->first();
 
-        $classes = ['CI', 'CP', 'CE1', 'CE2'];
+        $classes = ['CI', 'CP', 'CE1', 'CE2', 'CM1', 'CM2'];
 
         foreach ($classes as $classe) {
             DB::table('classes')
@@ -26,7 +26,7 @@ class ClasseSeeder extends Seeder
                 ]);
         }
 
-        $classes = ['6eme', '5eme'];
+        $classes = ['6eme', '5eme', '4eme', '3eme', 'seconde', 'premiere', 'terminale'];
 
         foreach ($classes as $classe) {
             DB::table('classes')
