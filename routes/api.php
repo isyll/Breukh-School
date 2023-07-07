@@ -62,7 +62,4 @@ Route::get('/classe/{classe}/liste', [EnrollmentController::class, 'studentsList
 Route::post('/add-notes/{classe}/{subject}/{evaluation}', [NoteController::class, 'addNote']);
 
 // Route::get('/test/{test}', [SubjectController::class, 'test']);
-Route::get(
-    '/test',
-    [StudentController::class, 'test']
-);
+// Route::get('/test', [StudentController::class, 'test']);
