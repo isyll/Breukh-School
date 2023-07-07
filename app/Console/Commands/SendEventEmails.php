@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\EventEmail;
 use App\Models\Classe;
 use App\Models\SchoolYear;
-use App\Models\StudentParent;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -38,6 +38,7 @@ class SendEventEmails extends Command
         $currentYear = date('Y');
         $activeYear  = explode('-', $activeYear);
         $sent        = 0;
+        $sentEmails  = [];
         $commingMsg  = "Evènements à venir :\n";
         $comming     = [];
 
@@ -50,14 +51,13 @@ class SendEventEmails extends Command
                             foreach ($classe->students as $student) {
                                 $parent      = $student->parent;
                                 $paddedEmail = str_pad(' ' . $parent->email, 50, '.', STR_PAD_LEFT);
-                                Mail::mailer('smtp')->raw("Annonce $event->name", function ($message) use ($event, $parent) {
-                                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-                                    $message->to($parent->email);
-                                    $message->subject("Annonce $event->name");
-                                });
-                                $this->info("Envoi $paddedEmail");
-                                $sent++;
-                                sleep(2);
+                                if (!in_array($parent->email, $sentEmails)) {
+                                    Mail::to($parent->email)->send(new EventEmail($event->name, $event->date));
+                                    $this->info("Envoi $paddedEmail");
+                                    sleep(1);
+                                    $sent++;
+                                    $sentEmails[] = $parent->email;
+                                }
                             }
                         }
                         else {

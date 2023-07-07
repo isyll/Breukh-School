@@ -18,9 +18,10 @@ class StudentSeeder extends Seeder
         $activeYear = SchoolYear::where('state', 1)->first()->id;
         $classes    = Classe::all('id');
 
-        for ($i = 0; $i < 18; $i++) {
+        for ($i = 0; $i < 1; $i++) {
             DB::table('parents')->insert([
-                'email' => fake()->safeEmail()
+                // 'email' => 'pprcmdch@sharklasers.com'
+                'email' => 'ndiayediogal12345@gmail.com'
             ]);
         }
 
@@ -34,7 +35,7 @@ class StudentSeeder extends Seeder
                     'gender'     => fake()->randomElement(['male', 'female']),
                     'profile'    => fake()->randomElement(['internal']),
                     'number'     => $i + 1,
-                    'parent_id'  => rand(1, 18)
+                    'parent_id'  => 1
                 ]);
 
                 DB::table('enrollments')->insert([
