@@ -51,11 +51,9 @@ class SubjectSeeder extends Seeder
         ]);
 
         $subjects = ['ANG', 'FRA'];
-        $classes  = ['6eme', 'CI', '5eme', 'CE1'];
+        $classes  = Classe::all('*');
 
         foreach ($classes as $classe) {
-            $classe = Classe::where('name', $classe)->first();
-
             foreach ($subjects as $s) {
                 $s = Subject::where('code', $s)->first();
                 $classe->subjects()->save($s, [
