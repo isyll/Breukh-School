@@ -59,9 +59,11 @@ Route::get(
     [NoteController::class, 'subjectNotesList']
 );
 
+Route::get('/classes/{classe}/notes', [NoteController::class, 'classeNotesList']);
+
 Route::get(
-    '/classes/{classe}/notes',
-    [NoteController::class, 'classeNotesList']
+    '/classes/{classe}/notes/eleves/{student}',
+    [NoteController::class, 'getStudentNotes']
 );
 
 Route::post(

@@ -310,4 +310,43 @@ class NoteController extends Controller
 
         return NoteListResource::collection($results);
     }
+
+    public function getStudentNotes(Classe $classe, Student $student)
+    {
+        $activeYear = $this->activeYear()->id;
+        $results    = [];
+        $enrollment = Enrollment::where('student_id', $student->id)
+            ->where('classe_id', $classe->id)
+            ->where('school_year_id', $activeYear)
+            ->first();
+
+        if (!$enrollment) {
+            return response()->json([
+                'errors' => [
+                    __('messages.student_not_enrolled_in_this_class', [
+                        'firstname'  => $student->firstname,
+                        'lastname'   => $student->lastname,
+                        'class_name' => $classe->name
+                    ])
+                ]
+            ], 422);
+        }
+
+        $subjects = $classe->subjects;
+        foreach ($subjects as $subject) {
+            $classeSubject = ClasseSubject::where('classe_id', $classe->id)
+                ->where('subject_id', $subject->id)
+                ->where('school_year_id', $activeYear)
+                ->first();
+            $notes         = Note::where('classe_subject_id', $classeSubject->id)
+                ->where('enrollment_id', $enrollment->id)
+                ->get();
+
+            foreach ($notes as $note) {
+                $results[] = $note;
+            }
+        }
+
+        return NoteListResource::collection($results);
+    }
 }
