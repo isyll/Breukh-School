@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Traits\ActiveYear;
 use Illuminate\Http\Request;
 use App\Models\Classe;
 use App\Models\ClasseSubject;
@@ -18,6 +19,8 @@ use Illuminate\Support\Facades\Validator;
 
 class NoteController extends Controller
 {
+    use ActiveYear;
+
     public function addNote(
         Request $request,
         Classe $classe,
@@ -31,9 +34,9 @@ class NoteController extends Controller
             ], 422);
 
         $result        = [];
-        $year          = SchoolYear::where('state', 1)->first()->id;
+        $activeYear    = $this->activeYear()->id;
         $classeSubject = ClasseSubject::where('classe_id', $classe->id)
-            ->where('school_year_id', $year)
+            ->where('school_year_id', $activeYear)
             ->where('subject_id', $subject->id)->first();
 
         if (!$classeSubject) {
@@ -81,7 +84,7 @@ class NoteController extends Controller
 
                 $enrollment = Enrollment::where('student_id', $data['student'])
                     ->where('classe_id', $classe->id)
-                    ->where('school_year_id', $year)
+                    ->where('school_year_id', $activeYear)
                     ->first();
 
                 if (!$enrollment) {
@@ -143,13 +146,13 @@ class NoteController extends Controller
             ], 422);
 
         $result        = [];
-        $year          = SchoolYear::where('state', 1)->first()->id;
+        $activeYear    = $this->activeYear()->id;
         $classeSubject = ClasseSubject::where('classe_id', $classe->id)
-            ->where('school_year_id', $year)
+            ->where('school_year_id', $activeYear)
             ->where('subject_id', $subject->id)->first();
         $enrollment    = Enrollment::where('student_id', $student->id)
             ->where('classe_id', $classe->id)
-            ->where('school_year_id', $year)
+            ->where('school_year_id', $activeYear)
             ->first();
 
         if (!$classeSubject) {
@@ -182,7 +185,6 @@ class NoteController extends Controller
 
             $validator = Validator::make($data, [
                 'note'  => 'required|numeric',
-                'year'  => 'sometimes|exists:school_years,id',
                 'cycle' => 'required'
             ]);
 
@@ -238,43 +240,55 @@ class NoteController extends Controller
         return $result;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function subjectNotesList(Classe $classe, Subject $subject)
     {
-        //
-    }
+        $students   = $classe->students;
+        $activeYear = $this->activeYear()->id;
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $results = [];
+        foreach ($students as $student) {
+            $classeSubject = ClasseSubject::where('classe_id', $classe->id)
+                ->where('subject_id', $subject->id)
+                ->where('school_year_id', $activeYear)
+                ->first();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+            if (!$classeSubject) {
+                return response()->json([
+                    'errors' => [
+                        __(
+                            'messages.classe_does_not_have_this_subject',
+                            ['classe' => $classe->name, 'subject' => $subject->name]
+                        )
+                    ]
+                ], 422);
+            }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+            $enrollment = Enrollment::where('student_id', $student->id)
+                ->where('classe_id', $classe->id)
+                ->where('school_year_id', $activeYear)
+                ->first();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            if (!$enrollment) {
+                return response()->json([
+                    'errors' => [
+                        __('messages.student_not_enrolled_in_this_class', [
+                            'firstname'  => $student->firstname,
+                            'lastname'   => $student->lastname,
+                            'class_name' => $classe->name
+                        ])
+                    ]
+                ], 422);
+            }
+
+            $notes = Note::where('classe_subject_id', $classeSubject->id)
+                ->where('enrollment_id', $enrollment->id)
+                ->get();
+
+            foreach ($notes as $note) {
+                $results[] = $note;
+            }
+        }
+
+        return $results;
     }
 }
