@@ -55,7 +55,7 @@ class NoteController extends Controller
             ]);
 
             if (!$validator->fails()) {
-                $cycle = Cycle::find($classe->gradeLevel->id);
+                $cycle = Cycle::find($classe->gradeLevel->cycle_id);
 
                 if ($cycle->number < 1 || $data['cycle'] > $cycle->number) {
                     return response()->json([
