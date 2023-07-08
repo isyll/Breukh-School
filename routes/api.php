@@ -60,6 +60,7 @@ Route::prefix('/disciplines')
 
 Route::get('/classe/{classe}/liste', [EnrollmentController::class, 'studentsList']);
 Route::post('/classes/{classe}/disciplines/{subject}/evals/{evaluation}', [NoteController::class, 'addNote']);
+Route::post('/classes/{classe}/disciplines/{subject}/evals/{evaluation}/eleves/{student}', [NoteController::class, 'addStudentNote']);
 
 // Route::get('/test/{test}', [SubjectController::class, 'test']);
 // Route::get('/test', [StudentController::class, 'test']);
