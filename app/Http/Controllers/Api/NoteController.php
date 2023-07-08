@@ -39,7 +39,7 @@ class NoteController extends Controller
             return response()->json([
                 'errors' => [
                     __(
-                        'classe_does_not_have_this_subject',
+                        'messages.classe_does_not_have_this_subject',
                         ['classe' => $classe->name, 'subject' => $subject->name]
                     )
                 ]
