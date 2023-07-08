@@ -42,6 +42,7 @@ Route::prefix('/eleves')
     });
 
 Route::get('/annees/all', [SchoolYearController::class, 'all']);
+Route::get('/annees/all', [SchoolYearController::class, 'all']);
 
 Route::prefix('/disciplines')
     ->controller(SubjectController::class)
@@ -69,4 +70,5 @@ Route::post(
 );
 
 // Route::get('/test/{test}', [SubjectController::class, 'test']);
+// Route::get('/test', [NoteController::class, 'test']);
 // Route::get('/test', [NoteController::class, 'test']);
