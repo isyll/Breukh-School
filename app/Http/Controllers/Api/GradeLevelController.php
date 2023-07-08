@@ -13,10 +13,6 @@ class GradeLevelController extends Controller
 {
     use JoinQueryParams;
 
-    private array $relations = [
-        'classes'
-    ];
-
     public function all(Request $request)
     {
         return GradeLevelClasseResource::collection(GradeLevel::all());
