@@ -13,6 +13,7 @@ use App\Models\Note;
 use App\Models\SchoolYear;
 use App\Models\Student;
 use App\Models\Subject;
+use Exception;
 use Illuminate\Support\Facades\Validator;
 
 class NoteController extends Controller
@@ -47,6 +48,10 @@ class NoteController extends Controller
         }
 
         foreach ($datas as $data) {
+            if (!is_array($data)) {
+                throw new Exception("\"notes\" must be of type array of object");
+            }
+
             $validator = Validator::make($data, [
                 'student' => 'required|exists:students,id',
                 'note'    => 'required|numeric',
@@ -55,6 +60,17 @@ class NoteController extends Controller
             ]);
 
             if (!$validator->fails()) {
+                if ($data['note'] > $classeSubject->max_note) {
+                    return response()->json([
+                        'errors' => [
+                            __('messages.note_greater_than_max', [
+                                'note' => $data['note'],
+                                'max'  => $classeSubject->max_note
+                            ])
+                        ]
+                    ], 422);
+                }
+
                 $cycle = Cycle::find($classe->gradeLevel->cycle_id);
 
                 if ($cycle->number < 1 || $data['cycle'] > $cycle->number) {
@@ -70,7 +86,6 @@ class NoteController extends Controller
 
                 if (!$enrollment) {
                     $student = Student::find($data['student']);
-
                     return response()->json([
                         'errors' => [
                             __('messages.student_not_enrolled_in_this_class', [
@@ -87,17 +102,6 @@ class NoteController extends Controller
                     ->where('evaluation_id', $evaluation->id)
                     ->where('cycle', $data['cycle'])
                     ->first();
-
-                if ($data['note'] > $classeSubject->max_note) {
-                    return response()->json([
-                        'errors' => [
-                            __('messages.note_greater_than_max', [
-                                'note' => $data['note'],
-                                'max'  => $classeSubject->max_note
-                            ])
-                        ]
-                    ], 422);
-                }
 
                 if ($note) {
                     $note->value = $data['note'];
