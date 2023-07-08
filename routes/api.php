@@ -35,22 +35,15 @@ Route::prefix('/niveaux')
 
 Route::prefix('/eleves')
     ->controller(StudentController::class)
-    ->name('students.')
     ->group(function () {
         Route::post('/', 'store');
         Route::patch('/sortie', 'out');
         Route::patch('/entree', 'in');
     });
 
-Route::prefix('/annees')
-    ->name('years.')
-    ->controller(SchoolYearController::class)
-    ->group(function () {
-        Route::get('/all', 'all');
-    });
+Route::get('/annees/all', [SchoolYearController::class, 'all']);
 
 Route::prefix('/disciplines')
-    ->name('subjects.')
     ->controller(SubjectController::class)
     ->group(function () {
         Route::get('/all', 'all');
@@ -59,8 +52,21 @@ Route::prefix('/disciplines')
     });
 
 Route::get('/classe/{classe}/liste', [EnrollmentController::class, 'studentsList']);
-Route::post('/classes/{classe}/disciplines/{subject}/evals/{evaluation}/notes', [NoteController::class, 'addNote']);
-Route::post('/classes/{classe}/disciplines/{subject}/evals/{evaluation}/eleves/{student}', [NoteController::class, 'addStudentNote']);
+
+Route::get(
+    '/classes/{classe}/disciplines/{subject}/notes',
+    [NoteController::class, 'notesList']
+);
+
+Route::post(
+    '/classes/{classe}/disciplines/{subject}/evals/{evaluation}/notes',
+    [NoteController::class, 'addNote']
+);
+
+Route::post(
+    '/classes/{classe}/disciplines/{subject}/evals/{evaluation}/eleves/{student}',
+    [NoteController::class, 'addStudentNote']
+);
 
 // Route::get('/test/{test}', [SubjectController::class, 'test']);
-// Route::get('/test', [StudentController::class, 'test']);
+// Route::get('/test', [NoteController::class, 'test']);
