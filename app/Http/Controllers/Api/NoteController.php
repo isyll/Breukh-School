@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\NoteListResource;
 use App\Traits\ActiveYear;
 use Illuminate\Http\Request;
 use App\Models\Classe;
@@ -242,43 +243,30 @@ class NoteController extends Controller
 
     public function subjectNotesList(Classe $classe, Subject $subject)
     {
-        $students   = $classe->students;
-        $activeYear = $this->activeYear()->id;
+        $students      = $classe->students;
+        $activeYear    = $this->activeYear()->id;
+        $results       = [];
+        $classeSubject = ClasseSubject::where('classe_id', $classe->id)
+            ->where('subject_id', $subject->id)
+            ->where('school_year_id', $activeYear)
+            ->first();
 
-        $results = [];
+        if (!$classeSubject) {
+            return response()->json([
+                'errors' => [
+                    __(
+                        'messages.classe_does_not_have_this_subject',
+                        ['classe' => $classe->name, 'subject' => $subject->name]
+                    )
+                ]
+            ], 422);
+        }
+
         foreach ($students as $student) {
-            $classeSubject = ClasseSubject::where('classe_id', $classe->id)
-                ->where('subject_id', $subject->id)
-                ->where('school_year_id', $activeYear)
-                ->first();
-
-            if (!$classeSubject) {
-                return response()->json([
-                    'errors' => [
-                        __(
-                            'messages.classe_does_not_have_this_subject',
-                            ['classe' => $classe->name, 'subject' => $subject->name]
-                        )
-                    ]
-                ], 422);
-            }
-
             $enrollment = Enrollment::where('student_id', $student->id)
                 ->where('classe_id', $classe->id)
                 ->where('school_year_id', $activeYear)
                 ->first();
-
-            if (!$enrollment) {
-                return response()->json([
-                    'errors' => [
-                        __('messages.student_not_enrolled_in_this_class', [
-                            'firstname'  => $student->firstname,
-                            'lastname'   => $student->lastname,
-                            'class_name' => $classe->name
-                        ])
-                    ]
-                ], 422);
-            }
 
             $notes = Note::where('classe_subject_id', $classeSubject->id)
                 ->where('enrollment_id', $enrollment->id)
@@ -289,6 +277,37 @@ class NoteController extends Controller
             }
         }
 
-        return $results;
+        return NoteListResource::collection($results);
+    }
+
+    public function classeNotesList(Classe $classe)
+    {
+        $students   = $classe->students;
+        $activeYear = $this->activeYear()->id;
+        $results    = [];
+        $subjects   = $classe->subjects;
+
+        foreach ($subjects as $subject) {
+            $classeSubject = ClasseSubject::where('classe_id', $classe->id)
+                ->where('subject_id', $subject->id)
+                ->where('school_year_id', $activeYear)
+                ->first();
+
+            foreach ($students as $student) {
+                $enrollment = Enrollment::where('student_id', $student->id)
+                    ->where('classe_id', $classe->id)
+                    ->where('school_year_id', $activeYear)
+                    ->first();
+                $notes      = Note::where('classe_subject_id', $classeSubject->id)
+                    ->where('enrollment_id', $enrollment->id)
+                    ->get();
+
+                foreach ($notes as $note) {
+                    $results[] = $note;
+                }
+            }
+        }
+
+        return NoteListResource::collection($results);
     }
 }
