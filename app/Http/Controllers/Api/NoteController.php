@@ -38,7 +38,8 @@ class NoteController extends Controller
             $validator = Validator::make($data, [
                 'student' => 'required|exists:students,id',
                 'note'    => 'required|numeric',
-                'year'    => 'sometimes|exists:school_years,id'
+                'year'    => 'sometimes|exists:school_years,id',
+                'cycle'   => 'required'
             ]);
 
             if (!$validator->fails()) {
