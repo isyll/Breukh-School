@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ClasseController;
 use App\Http\Controllers\Api\EnrollmentController;
+use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\GradeLevelController;
 use App\Http\Controllers\Api\NoteController;
 use App\Http\Controllers\Api\SchoolYearController;
@@ -75,6 +76,14 @@ Route::post(
     '/classes/{classe}/disciplines/{subject}/evals/{evaluation}/eleves/{student}',
     [NoteController::class, 'addStudentNote']
 );
+
+Route::prefix('/evenements')
+    ->controller(EventController::class)
+    ->group(function () {
+        Route::get('/', 'all');
+        Route::post('/', 'store');
+        Route::post('/{event}/participations', 'addParticipations');
+    });
 
 // Route::get('/test/{test}', [SubjectController::class, 'test']);
 // Route::get('/test', [NoteController::class, 'test']);

@@ -9,5 +9,7 @@ class Event extends Model
 {
     use HasFactory;
 
+    public $table = 'events';
+
     public $timestamps = false;
 }

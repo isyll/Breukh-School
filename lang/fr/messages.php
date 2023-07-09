@@ -9,5 +9,6 @@ return [
     'choosen_cycle_is_invalid'           => 'Le cycle choisi est invalide',
     'note_greater_than_max'              => 'Le note :note est plus grande que :max',
     'classe_does_not_have_this_subject'  => 'La classe :classe ne possède pas le sujet :subject',
-    'input_format_is_invalid'            => 'Le format des données est invalide'
+    'input_format_is_invalid'            => 'Le format des données est invalide',
+    'class_does_not_exists'              => "La classe :class_name n'existe pas"
 ];

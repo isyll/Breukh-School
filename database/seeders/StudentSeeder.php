@@ -31,9 +31,11 @@ class StudentSeeder extends Seeder
                     'firstname'  => fake()->firstName(),
                     'lastname'   => fake()->lastName(),
                     'birthdate'  => fake()->date(),
-                    'birthplace' => fake()->randomElement(['Dakar', 'Kilikoro']),
+                    'birthplace' => fake()->randomElement(
+                        ['Dakar', 'Kilikoro', 'Diamniadio', 'Thiès']
+                    ),
                     'gender'     => fake()->randomElement(['male', 'female']),
-                    'profile'    => fake()->randomElement(['internal']),
+                    'profile'    => fake()->randomElement(['internal', 'external']),
                     'number'     => $i + 1,
                     'parent_id'  => 1
                 ]);
