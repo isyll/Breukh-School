@@ -26,10 +26,11 @@ class StudentSeeder extends Seeder
         }
 
         foreach ($classes as $classe) {
-            for ($i = 0; $i < 10; $i++) {
+            for ($i = 0; $i < 5; $i++) {
                 DB::table('students')->insert([
                     'firstname'  => fake()->firstName(),
                     'lastname'   => fake()->lastName(),
+                    'email'      => fake()->safeEmail(),
                     'birthdate'  => fake()->date(),
                     'birthplace' => fake()->randomElement(
                         ['Dakar', 'Kilikoro', 'Diamniadio', 'Thiès']

@@ -31,31 +31,27 @@ class SendEventEmails extends Command
      */
     public function handle()
     {
-        $this->output->writeln("\n<bg=blue> Envoi des emails aux parents d'élèves </>\n");
+        $this->output->writeln("\n<bg=blue> Envoi des emails </>\n");
 
-        $classes     = Classe::with('events')->with('students')->get();
-        $sent        = 0;
-        $sentEmails  = [];
-        $commingMsg  = "Evènements à venir :\n";
-        $comming     = [];
+        $classes    = Classe::with('events')->with('students')->get();
+        $sent       = 0;
+        $commingMsg = "Evènements à venir :\n";
+        $comming    = [];
 
         foreach ($classes as $classe) {
             foreach ($classe->events as $event) {
                 $eventDate = Carbon::parse($event->date);
                 if ($eventDate->isTomorrow()) {
                     foreach ($classe->students as $student) {
-                        $parent      = $student->parent;
-                        $paddedEmail = str_pad(' ' . $parent->email, 50, '.', STR_PAD_LEFT);
-                        if (!in_array($parent->email, $sentEmails)) {
-                            Mail::to($parent->email)->send(new EventEmail($event->name, $event->date));
-                            $this->info("Envoi $paddedEmail");
-                            sleep(1);
-                            $sent++;
-                            $sentEmails[] = $parent->email;
-                        }
+                        $paddedEmail = str_pad(' ' . $student->email, 50, '.', STR_PAD_LEFT);
+                        // Mail::to($student->email)->send(new EventEmail($event->name, $event->date));
+                        sleep(1);
+                        $this->info("Envoi $paddedEmail");
+                        $sent++;
+                        if ($sent ==2)break;
                     }
                 }
-                else {
+                else if ($eventDate->isAfter(Carbon::create())) {
                     $datePadded = str_pad(
                         Carbon::parse($event->date)->toDateString(),
                         50,
