@@ -181,7 +181,9 @@ class NoteController extends Controller
 
         foreach ($datas as $data) {
             if (!is_array($data)) {
-                throw new Exception("\"notes\" must be of type array of object");
+                return response()->json([
+                    'errors' => [__('messages.input_format_is_invalid')]
+                ], 422);
             }
 
             $validator = Validator::make($data, [
@@ -243,12 +245,16 @@ class NoteController extends Controller
 
     public function subjectNotesList(Classe $classe, Subject $subject)
     {
-        $students      = $classe->students;
-        $activeYear    = $this->activeYear()->id;
         $results       = [];
-        $classeSubject = ClasseSubject::where('classe_id', $classe->id)
-            ->where('subject_id', $subject->id)
-            ->where('school_year_id', $activeYear)
+        $activeYear    = $this->activeYear()->id;
+        $classeSubject = ClasseSubject::where(
+            [
+                'classe_subject.classe_id'      => $classe->id,
+                'subject_id'                    => $subject->id,
+                'classe_subject.school_year_id' => $activeYear
+            ]
+        )
+            ->join('enrollments as e', 'e.classe_id', '=', 'classe_subject.classe_id')
             ->first();
 
         if (!$classeSubject) {
@@ -262,16 +268,19 @@ class NoteController extends Controller
             ], 422);
         }
 
+        $students = $classe->students;
         foreach ($students as $student) {
-            $enrollment = Enrollment::where('student_id', $student->id)
-                ->where('classe_id', $classe->id)
-                ->where('school_year_id', $activeYear)
+            $enrollment = Enrollment::where([
+                'student_id'     => $student->id,
+                'classe_id'      => $classe->id,
+                'school_year_id' => $activeYear
+            ])
                 ->first();
-
-            $notes = Note::where('classe_subject_id', $classeSubject->id)
-                ->where('enrollment_id', $enrollment->id)
+            $notes      = Note::where([
+                'classe_subject_id' => $classeSubject->id,
+                'enrollment_id'     => $enrollment->id
+            ])
                 ->get();
-
             foreach ($notes as $note) {
                 $results[] = $note;
             }
@@ -288,18 +297,26 @@ class NoteController extends Controller
         $subjects   = $classe->subjects;
 
         foreach ($subjects as $subject) {
-            $classeSubject = ClasseSubject::where('classe_id', $classe->id)
-                ->where('subject_id', $subject->id)
-                ->where('school_year_id', $activeYear)
+            $classeSubject = ClasseSubject::where(
+                [
+                    'classe_subject.classe_id'      => $classe->id,
+                    'subject_id'                    => $subject->id,
+                    'classe_subject.school_year_id' => $activeYear
+                ]
+            )
                 ->first();
 
             foreach ($students as $student) {
-                $enrollment = Enrollment::where('student_id', $student->id)
-                    ->where('classe_id', $classe->id)
-                    ->where('school_year_id', $activeYear)
+                $enrollment = Enrollment::where([
+                    'student_id'     => $student->id,
+                    'classe_id'      => $classe->id,
+                    'school_year_id' => $activeYear
+                ])
                     ->first();
-                $notes      = Note::where('classe_subject_id', $classeSubject->id)
-                    ->where('enrollment_id', $enrollment->id)
+                $notes      = Note::where([
+                    'classe_subject_id' => $classeSubject->id,
+                    'enrollment_id'     => $enrollment->id
+                ])
                     ->get();
 
                 foreach ($notes as $note) {
@@ -315,9 +332,11 @@ class NoteController extends Controller
     {
         $activeYear = $this->activeYear()->id;
         $results    = [];
-        $enrollment = Enrollment::where('student_id', $student->id)
-            ->where('classe_id', $classe->id)
-            ->where('school_year_id', $activeYear)
+        $enrollment = Enrollment::where([
+            'student_id'     => $student->id,
+            'classe_id'      => $classe->id,
+            'school_year_id' => $activeYear
+        ])
             ->first();
 
         if (!$enrollment) {
@@ -334,12 +353,16 @@ class NoteController extends Controller
 
         $subjects = $classe->subjects;
         foreach ($subjects as $subject) {
-            $classeSubject = ClasseSubject::where('classe_id', $classe->id)
-                ->where('subject_id', $subject->id)
-                ->where('school_year_id', $activeYear)
+            $classeSubject = ClasseSubject::where([
+                'classe_subject.classe_id'      => $classe->id,
+                'subject_id'                    => $subject->id,
+                'classe_subject.school_year_id' => $activeYear
+            ])
                 ->first();
-            $notes         = Note::where('classe_subject_id', $classeSubject->id)
-                ->where('enrollment_id', $enrollment->id)
+            $notes         = Note::where([
+                'classe_subject_id' => $classeSubject->id,
+                'enrollment_id'     => $enrollment->id
+            ])
                 ->get();
 
             foreach ($notes as $note) {
