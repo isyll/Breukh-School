@@ -14,8 +14,13 @@ class Note extends Model
 
     public $timestamps = false;
 
-    public function enrollments()
+    public function enrollment()
     {
-        $this->belongsToMany(Enrollment::class, '');
+        return $this->belongsTo(Enrollment::class);
+    }
+
+    public function evaluation()
+    {
+        return $this->belongsTo(Evaluation::class);
     }
 }

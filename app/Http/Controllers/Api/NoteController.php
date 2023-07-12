@@ -250,11 +250,10 @@ class NoteController extends Controller
         $classeSubject = ClasseSubject::where(
             [
                 'classe_subject.classe_id'      => $classe->id,
-                'subject_id'                    => $subject->id,
+                'classe_subject.subject_id'     => $subject->id,
                 'classe_subject.school_year_id' => $activeYear
             ]
         )
-            ->join('enrollments as e', 'e.classe_id', '=', 'classe_subject.classe_id')
             ->first();
 
         if (!$classeSubject) {
@@ -268,6 +267,7 @@ class NoteController extends Controller
             ], 422);
         }
 
+        $i        = 0;
         $students = $classe->students;
         foreach ($students as $student) {
             $enrollment = Enrollment::where([
@@ -279,11 +279,24 @@ class NoteController extends Controller
             $notes      = Note::where([
                 'classe_subject_id' => $classeSubject->id,
                 'enrollment_id'     => $enrollment->id
-            ])
+            ])->with('evaluation')
                 ->get();
-            foreach ($notes as $note) {
-                $results[] = $note;
+            if (count($notes) === 0)
+                continue;
+
+            $results[$i] = [
+                'id'        => $student->id,
+                'firstname' => $student->firstname,
+                'lastname'  => $student->lastname,
+            ];
+
+            foreach ($notes as &$note) {
+                $results[$i]['notes'][$note->evaluation->name] = [
+                    'value' => $note->value,
+                    Cycle::find($note->cycle)->name => $note->cycle
+                ];
             }
+            $i++;
         }
 
         return NoteListResource::collection($results);
@@ -297,13 +310,11 @@ class NoteController extends Controller
         $subjects   = $classe->subjects;
 
         foreach ($subjects as $subject) {
-            $classeSubject = ClasseSubject::where(
-                [
-                    'classe_subject.classe_id'      => $classe->id,
-                    'subject_id'                    => $subject->id,
-                    'classe_subject.school_year_id' => $activeYear
-                ]
-            )
+            $classeSubject = ClasseSubject::where([
+                'classe_subject.classe_id'      => $classe->id,
+                'subject_id'                    => $subject->id,
+                'classe_subject.school_year_id' => $activeYear
+            ])
                 ->first();
 
             foreach ($students as $student) {
