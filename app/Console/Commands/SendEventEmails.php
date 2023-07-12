@@ -42,12 +42,13 @@ class SendEventEmails extends Command
             foreach ($classe->events as $event) {
                 $eventDate = Carbon::parse($event->date);
                 if ($eventDate->isTomorrow()) {
-                    foreach ($classe->students as $student) {
-                        $paddedEmail = str_pad(' ' . $student->email, 50, '.', STR_PAD_LEFT);
-                        Mail::to($student->email)->send(new EventEmail($event->name, $event->date));
-                        $this->info("Envoi $paddedEmail");
-                        $sent++;
-                    }
+                    foreach ($classe->students as $student)
+                        if ($student->state) {
+                            $paddedEmail = str_pad(' ' . $student->email, 50, '.', STR_PAD_LEFT);
+                            Mail::to($student->email)->send(new EventEmail($event->name, $event->date));
+                            $this->info("Envoi $paddedEmail");
+                            $sent++;
+                        }
                 }
                 else if ($eventDate->isAfter(Carbon::create())) {
                     $datePadded = str_pad(
