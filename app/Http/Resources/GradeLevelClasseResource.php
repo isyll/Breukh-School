@@ -14,10 +14,13 @@ class GradeLevelClasseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            'id'      => $this->id,
-            'name'    => $this->name,
-            'classes' => OnlyClasseResource::collection($this->classes)
+        $data = [
+            'id'   => $this->id,
+            'name' => $this->name,
         ];
+
+        if (isset($this['classes']))
+            $data['classes'] = OnlyClasseResource::collection($this->classes);
+        return $data;
     }
 }

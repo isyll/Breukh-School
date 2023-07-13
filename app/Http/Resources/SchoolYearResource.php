@@ -15,9 +15,9 @@ class SchoolYearResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'     => $this->id,
-            'period' => $this->period,
-            'state'  => $this->state
+            'id'      => $this->id,
+            'libelle' => $this->period,
+            'etat'    => $this->state
         ];
     }
 }

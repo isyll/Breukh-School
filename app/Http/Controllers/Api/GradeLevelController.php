@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\GradeLevelClasseResource;
-use App\Http\Resources\GradeLevelResource;
+use App\Http\Resources\GradeLevelJoinResource;
+use App\Models\Classe;
 use App\Models\GradeLevel;
 use App\Traits\JoinQueryParams;
 use Illuminate\Http\Request;
@@ -18,8 +19,16 @@ class GradeLevelController extends Controller
         return GradeLevelClasseResource::collection(GradeLevel::all());
     }
 
-    public function show(GradeLevel $grade_level)
+    public function show(Request $request, int $grade_level)
     {
-        return $grade_level;
+        return $this->runQueryRelations(
+            $request,
+            GradeLevel::class,
+            [
+                'classes' => 'classes',
+            ],
+            $grade_level,
+            GradeLevelJoinResource::class
+        );
     }
 }

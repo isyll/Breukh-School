@@ -31,7 +31,11 @@ Route::prefix('/niveaux')
     ->controller(GradeLevelController::class)
     ->group(function () {
         Route::get('/', 'all')->name('all');
-        Route::get('/{grade_level}', 'show')->whereNumber('grade_level')->name('show');
+        Route::get(
+            '/{grade_level}',
+            [GradeLevelController::class, 'show']
+        )
+            ->whereNumber('grade_level');
     });
 
 Route::prefix('/eleves')
@@ -42,8 +46,12 @@ Route::prefix('/eleves')
         Route::patch('/entree', 'in');
     });
 
-Route::get('/annees/all', [SchoolYearController::class, 'all']);
-Route::get('/annees/all', [SchoolYearController::class, 'all']);
+Route::prefix('/annees')
+    ->controller(SchoolYearController::class)
+    ->group(function () {
+        Route::get('/{school_year}', 'show')->whereNumber('school_year');
+        Route::get('/all', 'all');
+    });
 
 Route::prefix('/disciplines')
     ->controller(SubjectController::class)
@@ -53,29 +61,37 @@ Route::prefix('/disciplines')
         Route::post('/create', 'store');
     });
 
-Route::get('/classe/{classe}/liste', [EnrollmentController::class, 'studentsList']);
-
-Route::get(
-    '/classes/{classe}/disciplines/{subject}/notes',
-    [NoteController::class, 'subjectNotesList']
-);
-
-Route::get('/classes/{classe}/notes', [NoteController::class, 'classeNotesList']);
-
-Route::get(
-    '/classes/{classe}/notes/eleves/{student}',
-    [NoteController::class, 'getStudentNotes']
-);
-
-Route::post(
-    '/classes/{classe}/disciplines/{subject}/evals/{evaluation}/notes',
-    [NoteController::class, 'addNote']
-);
-
-Route::post(
-    '/classes/{classe}/disciplines/{subject}/evals/{evaluation}/eleves/{student}',
-    [NoteController::class, 'addStudentNote']
-);
+Route::prefix('/classes')
+    ->group(function () {
+        Route::get(
+            '/{classe}/liste',
+            [EnrollmentController::class, 'studentsList']
+        );
+        Route::get(
+            '/{classe}',
+            [ClasseController::class, 'show']
+        );
+        Route::get(
+            '/{classe}/disciplines/{subject}/notes',
+            [NoteController::class, 'subjectNotesList']
+        );
+        Route::get(
+            '/{classe}/notes',
+            [NoteController::class, 'classeNotesList']
+        );
+        Route::get(
+            '/{classe}/notes/eleves/{student}',
+            [NoteController::class, 'getStudentNotes']
+        );
+        Route::post(
+            '/{classe}/disciplines/{subject}/evals/{evaluation}/notes',
+            [NoteController::class, 'addNote']
+        );
+        Route::post(
+            '/{classe}/disciplines/{subject}/evals/{evaluation}/eleves/{student}',
+            [NoteController::class, 'addStudentNote']
+        );
+    });
 
 Route::prefix('/evenements')
     ->controller(EventController::class)

@@ -10,5 +10,6 @@ return [
     'note_greater_than_max'              => 'Le note :note est plus grande que :max',
     'classe_does_not_have_this_subject'  => 'La classe :classe ne possède pas le sujet :subject',
     'input_format_is_invalid'            => 'Le format des données est invalide',
-    'class_does_not_exists'              => "La classe :class_name n'existe pas"
+    'class_does_not_exists'              => "La classe :class_name n'existe pas",
+    'relation_not_found'                 => "La relation :relation n'existe pas"
 ];
